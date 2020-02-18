@@ -24,6 +24,20 @@ import androidx.annotation.NonNull;
  *     desc   :
  *     version: 1.0
  * </pre>
+ * max:
+ *     surfaceView/Surface通过Skia进行离屏渲染方案
+ *     // 1 上层传入surface对象 宽高下去
+ *     // 2 通过JNI接口传入surface对象和宽高
+ *     // 3 根据传入的surface创建native层对应的surface 即ANativeWindow
+ *     // 4 设置其缓冲区的大小和格式
+ *     // 5 创建ANativeWindow的缓存区
+ *     // 6 锁定surface并将其格式、宽高、像素指针（二进制）绑定到缓存区中
+ *     // 7 创建SkBitmap根据缓冲区的宽高和格式
+ *     // 8 根据buffer的像素指针（二进制）设置SkBitmap的像素
+ *     // 9 根据SkBitmap创建SkCanvas
+ *     // 10 在SkCanvas画布上绘制
+ *     // 11 释放锁 根据新改动的buffers进行更新surface的内容
+ *
  */
 public class SkiaCanvasView extends SurfaceView implements SurfaceHolder.Callback2 {
 
@@ -93,6 +107,7 @@ public class SkiaCanvasView extends SurfaceView implements SurfaceHolder.Callbac
             switch (msg.what){
                 case DRAW:
                     synchronized (SkiaCanvasView.class){
+                        // 1 上层传入surface对象 宽高下去
                         SkiaUtils.native_render((Surface) msg.obj,msg.arg1,msg.arg2);
                     }
 
