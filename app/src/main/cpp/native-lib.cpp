@@ -101,13 +101,17 @@ native_renderCanvas(JNIEnv *env, jobject thiz, jobject bitmap) {
     int *pixel;
     int ret;
 
+    // j_bitmap_ = env_->NewGlobalRef(bitmap)
+    // java的bitmap上层如果设置了ARGB8888的 native层的则是RGBA8888的
+    
     // 3 获取bitmap的信息 如argb 长宽等信息
     ret = AndroidBitmap_getInfo(env,bitmap,&info);
   LOGE("AndroidBitmap_getInfo ret:%d", ret);
     int width = info.width;
     int height = info.height;
 
-    // 4 lockPixels给bitmap的pixel缓存上锁 并得到该pixel缓存对象
+    // 4 lockPixels给bitmap的pixel缓存上锁 并得到该pixel缓存对象  
+    // cmake要引入jnigraphics 才能使用lockPixels
     ret = AndroidBitmap_lockPixels(env,bitmap,(void**)&pixel);
     LOGE("AndroidBitmap_lockPixels ret:%d", ret);
 
